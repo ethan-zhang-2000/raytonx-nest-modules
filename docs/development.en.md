@@ -8,6 +8,7 @@ Chinese version: [development.md](development.md)
 packages/
   core/
   config/
+  logger/
   redis/
   scheduler/
 .github/workflows/

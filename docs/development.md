@@ -8,6 +8,7 @@ English version: [development.en.md](development.en.md)
 packages/
   core/
   config/
+  logger/
   redis/
   scheduler/
 .github/workflows/

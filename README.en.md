@@ -9,7 +9,7 @@ Chinese version: [README.md](README.md)
 - `@raytonx/core` - shared types and utilities. [packages/core/README.en.md](packages/core/README.en.md)
 - `@raytonx/config` - configuration module (env loading + Zod validation). [packages/config/README.en.md](packages/config/README.en.md)
 - `@raytonx/nest-logger` - structured logging with Pino, requestId/traceId, standard fields, and sensitive data redaction. [packages/logger/README.en.md](packages/logger/README.en.md)
-- `@raytonx/nest-response` - response envelope helpers with `ResponseBuilder` and standard success/error response types. [packages/response/README.en.md](packages/response/README.en.md)
+- `@raytonx/nest-response` - response envelope module with `TransformInterceptor`, `ResponseModule`, and `ResponseBuilder`. [packages/response/README.en.md](packages/response/README.en.md)
 - `@raytonx/nest-redis` - Redis connection management, client reuse, and distributed locking without caching features. [packages/redis/README.en.md](packages/redis/README.en.md)
 - `@raytonx/nest-scheduler` - safe scheduler helpers on top of `@nestjs/schedule`, with single-process overlap protection and optional Redis locks. [packages/scheduler/README.en.md](packages/scheduler/README.en.md)
 

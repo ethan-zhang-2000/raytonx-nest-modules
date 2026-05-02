@@ -16,3 +16,11 @@ export interface ResponseBuilderOptions {
   code?: string;
   message?: string;
 }
+
+export interface ResponseModuleOptions {
+  global?: boolean;
+  isGlobal?: boolean;
+  successCode?: string;
+  successMessage?: string;
+  wrapExistingEnvelope?: boolean;
+}

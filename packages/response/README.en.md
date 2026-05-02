@@ -1,6 +1,6 @@
 # @raytonx/nest-response
 
-Response envelope helpers for NestJS applications.
+Response envelope module and helpers for NestJS applications.
 
 Chinese version: [README.md](README.md)
 
@@ -19,6 +19,47 @@ yarn add @raytonx/nest-response
 ```
 
 ## Quick Start
+
+Register the response transform interceptor globally:
+
+```ts
+import { Module } from "@nestjs/common";
+import { ResponseModule } from "@raytonx/nest-response";
+
+@Module({
+  imports: [
+    ResponseModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+Controller return values are wrapped in the standard envelope:
+
+```ts
+{
+  id: 1,
+  name: "RaytonX"
+}
+```
+
+Returns:
+
+```json
+{
+  "success": true,
+  "code": "OK",
+  "message": "success",
+  "data": {
+    "id": 1,
+    "name": "RaytonX"
+  }
+}
+```
+
+You can also use `ResponseBuilder` directly:
 
 ```ts
 import { ResponseBuilder } from "@raytonx/nest-response";
@@ -42,6 +83,23 @@ Returns:
   }
 }
 ```
+
+## Module Registration
+
+```ts
+ResponseModule.forRoot({
+  isGlobal: true,
+  successCode: "OK",
+  successMessage: "success",
+});
+```
+
+Options:
+
+- `isGlobal` / `global` - maps to the Nest dynamic module `global` option.
+- `successCode` - default success response `code`, defaults to `OK`.
+- `successMessage` - default success response `message`, defaults to `success`.
+- `wrapExistingEnvelope` - whether to wrap return values that already use the standard envelope, defaults to `false`.
 
 ## Success Responses
 
@@ -94,11 +152,14 @@ Default error envelope:
 
 ## Exports
 
+- `ResponseModule`
+- `TransformInterceptor`
 - `ResponseBuilder`
 - `ResponseEnvelope<T>`
 - `ResponseErrorEnvelope`
 - `ResponseBuilderOptions`
+- `ResponseModuleOptions`
 
 ## Future Versions
 
-`TransformInterceptor`, `ExceptionFilter`, and `ResponseModule` will be added in later versions. This version only provides pure helper APIs and does not automatically change NestJS controller return values or exception responses.
+`ExceptionFilter` will be added in a later version. This version only standardizes success responses and does not automatically change NestJS exception responses.

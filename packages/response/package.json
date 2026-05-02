@@ -1,7 +1,7 @@
 {
   "name": "@raytonx/nest-response",
-  "version": "0.1.0",
-  "description": "Response envelope helpers for NestJS applications.",
+  "version": "0.2.0",
+  "description": "Response envelope module and helpers for NestJS applications.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -35,9 +35,13 @@
     "@raytonx/core": "workspace:*"
   },
   "peerDependencies": {
-    "@nestjs/common": "^10.0.0 || ^11.0.0"
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@nestjs/core": "^10.0.0 || ^11.0.0",
+    "rxjs": "^7.8.0"
   },
   "devDependencies": {
-    "@nestjs/common": "^11.0.0"
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "rxjs": "^7.8.1"
   }
 }

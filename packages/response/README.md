@@ -1,6 +1,6 @@
 # @raytonx/nest-response
 
-NestJS 应用的统一响应结构工具包。
+NestJS 应用的统一响应结构模块与工具包。
 
 English version: [README.en.md](README.en.md)
 
@@ -19,6 +19,47 @@ yarn add @raytonx/nest-response
 ```
 
 ## 快速开始
+
+全局注册响应转换拦截器：
+
+```ts
+import { Module } from "@nestjs/common";
+import { ResponseModule } from "@raytonx/nest-response";
+
+@Module({
+  imports: [
+    ResponseModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+Controller 返回值会被包装为统一结构：
+
+```ts
+{
+  id: 1,
+  name: "RaytonX"
+}
+```
+
+返回：
+
+```json
+{
+  "success": true,
+  "code": "OK",
+  "message": "success",
+  "data": {
+    "id": 1,
+    "name": "RaytonX"
+  }
+}
+```
+
+也可以直接使用 `ResponseBuilder`：
 
 ```ts
 import { ResponseBuilder } from "@raytonx/nest-response";
@@ -42,6 +83,23 @@ const response = ResponseBuilder.success({
   }
 }
 ```
+
+## 模块注册
+
+```ts
+ResponseModule.forRoot({
+  isGlobal: true,
+  successCode: "OK",
+  successMessage: "success",
+});
+```
+
+配置项：
+
+- `isGlobal` / `global`：映射到 Nest 动态模块的 `global` 配置。
+- `successCode`：成功响应默认 `code`，默认值为 `OK`。
+- `successMessage`：成功响应默认 `message`，默认值为 `success`。
+- `wrapExistingEnvelope`：是否继续包装已经是统一结构的返回值，默认 `false`。
 
 ## 成功响应
 
@@ -94,11 +152,14 @@ ResponseBuilder.error({
 
 ## 导出内容
 
+- `ResponseModule`
+- `TransformInterceptor`
 - `ResponseBuilder`
 - `ResponseEnvelope<T>`
 - `ResponseErrorEnvelope`
 - `ResponseBuilderOptions`
+- `ResponseModuleOptions`
 
 ## 后续版本
 
-`TransformInterceptor`、`ExceptionFilter` 与 `ResponseModule` 会在后续版本加入。当前版本只提供纯工具能力，不会自动修改 NestJS 控制器返回值或异常响应。
+`ExceptionFilter` 会在后续版本加入。当前版本只统一成功响应，不会自动修改 NestJS 异常响应。

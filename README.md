@@ -8,6 +8,7 @@ English version: [README.en.md](README.en.md)
 
 - `@raytonx/core`：通用类型与工具方法（Nest 模块公共能力）。[packages/core/README.md](packages/core/README.md)
 - `@raytonx/config`：配置模块（env 文件加载 + Zod 校验/转换）。[packages/config/README.md](packages/config/README.md)
+- `@raytonx/nest-cache`：基于 Nest 官方 cache-manager 的缓存模块，提供 `CacheModule`、`CacheService` 与 Redis URL 快速配置。[packages/cache/README.md](packages/cache/README.md)
 - `@raytonx/nest-logger`：结构化日志模块，支持 Pino、requestId/traceId、统一字段与敏感字段脱敏。[packages/logger/README.md](packages/logger/README.md)
 - `@raytonx/nest-response`：统一响应结构模块，提供 `TransformInterceptor`、`ResponseExceptionFilter`、`ResponseModule` 与 `ResponseBuilder`。[packages/response/README.md](packages/response/README.md)
 - `@raytonx/nest-redis`：Redis 连接管理、客户端复用与分布式锁模块（不包含缓存能力）。[packages/redis/README.md](packages/redis/README.md)

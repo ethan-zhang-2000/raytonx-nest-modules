@@ -50,5 +50,11 @@ export default defineConfig(
       },
     },
   },
+  {
+    files: ["apps/example/src/**/*.ts"],
+    rules: {
+      "@typescript-eslint/consistent-type-imports": "off",
+    },
+  },
   prettierConfig,
 );

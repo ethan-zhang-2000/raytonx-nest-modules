@@ -6,6 +6,7 @@ English version: [development.en.md](development.en.md)
 
 ```txt
 packages/
+  cache/
   core/
   config/
   logger/
@@ -121,6 +122,7 @@ pnpm build
 
 pnpm --filter @raytonx/core publish --access public --otp <one-time-password>
 pnpm --filter @raytonx/config publish --access public --otp <one-time-password>
+pnpm --filter @raytonx/nest-cache publish --access public --otp <one-time-password>
 pnpm --filter @raytonx/nest-redis publish --access public --otp <one-time-password>
 ```
 

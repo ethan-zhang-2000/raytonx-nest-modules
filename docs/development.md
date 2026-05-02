@@ -9,6 +9,7 @@ packages/
   core/
   config/
   logger/
+  response/
   redis/
   scheduler/
 .github/workflows/

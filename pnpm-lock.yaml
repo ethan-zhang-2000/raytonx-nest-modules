@@ -126,6 +126,16 @@ importers:
         specifier: ^11.0.0
         version: 11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2)
 
+  packages/response:
+    dependencies:
+      '@raytonx/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@nestjs/common':
+        specifier: ^11.0.0
+        version: 11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2)
+
   packages/scheduler:
     dependencies:
       '@raytonx/core':

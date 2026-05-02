@@ -1,4 +1,4 @@
-import { Controller, Get, Inject } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { ConfigService } from "@raytonx/config";
 
 import type { AppConfig } from "./config.schema";
@@ -13,7 +13,7 @@ interface ConfigResponse {
 
 @Controller("config")
 export class ConfigController {
-  constructor(@Inject(ConfigService) private readonly config: ConfigService<AppConfig>) {}
+  constructor(private readonly config: ConfigService<AppConfig>) {}
 
   @Get()
   getConfig(): ConfigResponse {

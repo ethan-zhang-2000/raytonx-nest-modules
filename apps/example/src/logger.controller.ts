@@ -1,6 +1,6 @@
 import { Controller, Get } from "@nestjs/common";
 
-import { type LoggerDemoService } from "./logger-demo.service";
+import { LoggerDemoService } from "./logger-demo.service";
 
 interface LoggerDemoResponse {
   action: string;

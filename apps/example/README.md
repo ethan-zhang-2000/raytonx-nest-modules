@@ -26,12 +26,15 @@ pnpm install
 cp .env.example .env
 ```
 
-当前初始化阶段只使用：
+当前配置由 `@raytonx/config` 加载，并通过 Zod schema 校验和转换：
 
+- `NODE_ENV`：运行环境，默认 `development`
 - `PORT`：HTTP 服务端口，默认 `3000`
+- `REDIS_URL`：Redis 连接地址，默认 `redis://127.0.0.1:6379`
 - `SERVICE_NAME`：健康检查返回的服务名，默认 `raytonx-example`
+- `LOG_LEVEL`：日志级别，默认 `info`
 
-`REDIS_URL` 和 `LOG_LEVEL` 会在后续接入 RaytonX 模块时使用。
+`envFilePath: "auto"` 会按当前工作目录加载 `.env`、`.env.local`、`.env.${NODE_ENV}`、`.env.${NODE_ENV}.local`。
 
 ## 运行
 
@@ -39,11 +42,16 @@ cp .env.example .env
 pnpm dev
 ```
 
+`pnpm dev` 会先使用 `tsc` 编译，再运行 `node --watch dist/main.js`，示例代码与生产构建后的运行方式保持一致。
+
 访问：
 
 ```bash
 curl http://localhost:3000/health
+curl http://localhost:3000/config
 ```
+
+`GET /config` 会返回经 `@raytonx/config` 校验和转换后的配置值。
 
 ## 构建与启动
 

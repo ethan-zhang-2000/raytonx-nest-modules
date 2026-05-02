@@ -26,12 +26,15 @@ Copy the example environment file:
 cp .env.example .env
 ```
 
-The initialized app currently uses:
+Configuration is loaded by `@raytonx/config` and validated/transformed with a Zod schema:
 
+- `NODE_ENV`: Runtime environment. Defaults to `development`.
 - `PORT`: HTTP server port. Defaults to `3000`.
+- `REDIS_URL`: Redis connection URL. Defaults to `redis://127.0.0.1:6379`.
 - `SERVICE_NAME`: Service name returned by the health endpoint. Defaults to `raytonx-example`.
+- `LOG_LEVEL`: Log level. Defaults to `info`.
 
-`REDIS_URL` and `LOG_LEVEL` will be used when RaytonX modules are integrated in later steps.
+`envFilePath: "auto"` loads `.env`, `.env.local`, `.env.${NODE_ENV}`, and `.env.${NODE_ENV}.local` from the current working directory.
 
 ## Run
 
@@ -39,11 +42,16 @@ The initialized app currently uses:
 pnpm dev
 ```
 
+`pnpm dev` compiles with `tsc` first, then runs `node --watch dist/main.js`, so the example code matches the production build runtime.
+
 Visit:
 
 ```bash
 curl http://localhost:3000/health
+curl http://localhost:3000/config
 ```
+
+`GET /config` returns the configuration values validated and transformed by `@raytonx/config`.
 
 ## Build And Start
 

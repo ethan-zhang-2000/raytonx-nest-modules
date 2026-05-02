@@ -20,7 +20,7 @@ yarn add @raytonx/nest-response
 
 ## Quick Start
 
-Register the response transform interceptor globally:
+Register the response transform interceptor and exception filter globally:
 
 ```ts
 import { Module } from "@nestjs/common";
@@ -59,6 +59,23 @@ Returns:
 }
 ```
 
+Thrown Nest HTTP exceptions are also wrapped in the standard error envelope:
+
+```ts
+throw new BadRequestException("Invalid request");
+```
+
+Returns:
+
+```json
+{
+  "success": false,
+  "code": "BAD_REQUEST",
+  "message": "Invalid request",
+  "data": null
+}
+```
+
 You can also use `ResponseBuilder` directly:
 
 ```ts
@@ -91,6 +108,8 @@ ResponseModule.forRoot({
   isGlobal: true,
   successCode: "OK",
   successMessage: "success",
+  errorCode: "INTERNAL_SERVER_ERROR",
+  errorMessage: "Internal server error",
 });
 ```
 
@@ -99,6 +118,8 @@ Options:
 - `isGlobal` / `global` - maps to the Nest dynamic module `global` option.
 - `successCode` - default success response `code`, defaults to `OK`.
 - `successMessage` - default success response `message`, defaults to `success`.
+- `errorCode` - default error response `code`, defaults to the HTTP status text, for example `400` to `BAD_REQUEST`.
+- `errorMessage` - default error response `message`. When omitted, HTTP exceptions prefer the Nest exception response `message`, and unknown exceptions use `Internal server error`.
 - `wrapExistingEnvelope` - whether to wrap return values that already use the standard envelope, defaults to `false`.
 
 ## Success Responses
@@ -145,6 +166,13 @@ Default error envelope:
 }
 ```
 
+`ResponseExceptionFilter` automatically handles HTTP exceptions and unknown exceptions:
+
+- HTTP exceptions use their exception status, for example `BadRequestException` returns `400`.
+- The default `code` is converted from the HTTP status, for example `400` to `BAD_REQUEST`.
+- The default `message` prefers the Nest exception response `message`; array messages are joined into a string.
+- Unknown exceptions return `500` and use the default error message to avoid exposing internal error details.
+
 ## Helpers
 
 - `ResponseBuilder.isEnvelope(value)` - checks whether a value already uses the standard response envelope.
@@ -154,12 +182,9 @@ Default error envelope:
 
 - `ResponseModule`
 - `TransformInterceptor`
+- `ResponseExceptionFilter`
 - `ResponseBuilder`
 - `ResponseEnvelope<T>`
 - `ResponseErrorEnvelope`
 - `ResponseBuilderOptions`
 - `ResponseModuleOptions`
-
-## Future Versions
-
-`ExceptionFilter` will be added in a later version. This version only standardizes success responses and does not automatically change NestJS exception responses.

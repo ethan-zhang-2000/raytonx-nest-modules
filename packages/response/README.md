@@ -20,7 +20,7 @@ yarn add @raytonx/nest-response
 
 ## 快速开始
 
-全局注册响应转换拦截器：
+全局注册响应转换拦截器与异常过滤器：
 
 ```ts
 import { Module } from "@nestjs/common";
@@ -59,6 +59,23 @@ Controller 返回值会被包装为统一结构：
 }
 ```
 
+抛出的 Nest HTTP 异常也会被包装为统一错误结构：
+
+```ts
+throw new BadRequestException("Invalid request");
+```
+
+返回：
+
+```json
+{
+  "success": false,
+  "code": "BAD_REQUEST",
+  "message": "Invalid request",
+  "data": null
+}
+```
+
 也可以直接使用 `ResponseBuilder`：
 
 ```ts
@@ -91,6 +108,8 @@ ResponseModule.forRoot({
   isGlobal: true,
   successCode: "OK",
   successMessage: "success",
+  errorCode: "INTERNAL_SERVER_ERROR",
+  errorMessage: "Internal server error",
 });
 ```
 
@@ -99,6 +118,8 @@ ResponseModule.forRoot({
 - `isGlobal` / `global`：映射到 Nest 动态模块的 `global` 配置。
 - `successCode`：成功响应默认 `code`，默认值为 `OK`。
 - `successMessage`：成功响应默认 `message`，默认值为 `success`。
+- `errorCode`：错误响应默认 `code`，默认按 HTTP 状态码转换，例如 `400` 转为 `BAD_REQUEST`。
+- `errorMessage`：错误响应默认 `message`。未配置时，HTTP 异常优先使用 Nest 异常响应中的 `message`，未知异常使用 `Internal server error`。
 - `wrapExistingEnvelope`：是否继续包装已经是统一结构的返回值，默认 `false`。
 
 ## 成功响应
@@ -145,6 +166,13 @@ ResponseBuilder.error({
 }
 ```
 
+`ResponseExceptionFilter` 会自动处理 HTTP 异常与未知异常：
+
+- HTTP 异常使用异常状态码，例如 `BadRequestException` 返回 `400`。
+- 默认 `code` 由 HTTP 状态码转换得到，例如 `400` 转为 `BAD_REQUEST`。
+- 默认 `message` 优先读取 Nest 异常响应体中的 `message`；数组消息会合并为字符串。
+- 未知异常返回 `500`，并使用默认错误文案，避免暴露内部错误信息。
+
 ## 工具方法
 
 - `ResponseBuilder.isEnvelope(value)`：判断值是否已经是统一响应结构。
@@ -154,12 +182,9 @@ ResponseBuilder.error({
 
 - `ResponseModule`
 - `TransformInterceptor`
+- `ResponseExceptionFilter`
 - `ResponseBuilder`
 - `ResponseEnvelope<T>`
 - `ResponseErrorEnvelope`
 - `ResponseBuilderOptions`
 - `ResponseModuleOptions`
-
-## 后续版本
-
-`ExceptionFilter` 会在后续版本加入。当前版本只统一成功响应，不会自动修改 NestJS 异常响应。

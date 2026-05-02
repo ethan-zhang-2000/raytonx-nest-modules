@@ -22,5 +22,7 @@ export interface ResponseModuleOptions {
   isGlobal?: boolean;
   successCode?: string;
   successMessage?: string;
+  errorCode?: string;
+  errorMessage?: string;
   wrapExistingEnvelope?: boolean;
 }

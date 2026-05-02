@@ -1,6 +1,7 @@
-import { APP_INTERCEPTOR } from "@nestjs/core";
+import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 import { describe, expect, it } from "vitest";
 
+import { ResponseExceptionFilter } from "./response-exception.filter";
 import { RESPONSE_MODULE_OPTIONS } from "./response.constants";
 import { ResponseModule } from "./response.module";
 import { TransformInterceptor } from "./transform.interceptor";
@@ -30,6 +31,10 @@ describe("ResponseModule", () => {
     expect(dynamicModule.providers).toContainEqual({
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
+    });
+    expect(dynamicModule.providers).toContainEqual({
+      provide: APP_FILTER,
+      useClass: ResponseExceptionFilter,
     });
   });
 });

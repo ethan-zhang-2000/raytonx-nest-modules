@@ -1,6 +1,7 @@
 import { type DynamicModule, Module } from "@nestjs/common";
-import { APP_INTERCEPTOR } from "@nestjs/core";
+import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 
+import { ResponseExceptionFilter } from "./response-exception.filter";
 import { RESPONSE_MODULE_OPTIONS } from "./response.constants";
 import type { ResponseModuleOptions } from "./response.interfaces";
 import { TransformInterceptor } from "./transform.interceptor";
@@ -20,8 +21,13 @@ export class ResponseModule {
           provide: APP_INTERCEPTOR,
           useClass: TransformInterceptor,
         },
+        ResponseExceptionFilter,
+        {
+          provide: APP_FILTER,
+          useClass: ResponseExceptionFilter,
+        },
       ],
-      exports: [TransformInterceptor, RESPONSE_MODULE_OPTIONS],
+      exports: [TransformInterceptor, ResponseExceptionFilter, RESPONSE_MODULE_OPTIONS],
     };
     const isGlobal = options.isGlobal ?? options.global;
 

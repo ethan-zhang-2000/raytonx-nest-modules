@@ -53,6 +53,14 @@ curl http://localhost:3000/config
 
 `GET /config` returns the configuration values validated and transformed by `@raytonx/config`.
 
+The logger module is enabled too:
+
+```bash
+curl http://localhost:3000/logger/demo
+```
+
+`@raytonx/nest-logger` replaces the Nest logger with structured Pino logging. `GET /logger/demo` calls a service method decorated with `@Log()`, which emits method-level log events and redacts sensitive fields such as `password` and `token`.
+
 ## Build And Start
 
 ```bash

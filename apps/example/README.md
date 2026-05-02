@@ -53,6 +53,14 @@ curl http://localhost:3000/config
 
 `GET /config` 会返回经 `@raytonx/config` 校验和转换后的配置值。
 
+日志模块也已启用：
+
+```bash
+curl http://localhost:3000/logger/demo
+```
+
+`@raytonx/nest-logger` 会接管 Nest logger，输出 Pino 结构化请求日志。`GET /logger/demo` 会调用一个带 `@Log()` 的 service 方法，日志中会展示方法级事件，并对 `password`、`token` 等敏感字段脱敏。
+
 ## 构建与启动
 
 ```bash

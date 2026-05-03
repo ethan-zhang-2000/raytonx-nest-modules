@@ -61,6 +61,14 @@ curl http://localhost:3000/logger/demo
 
 `@raytonx/nest-logger` 会接管 Nest logger，输出 Pino 结构化请求日志。`GET /logger/demo` 会调用一个带 `@Log()` 的 service 方法，日志中会展示方法级事件，并对 `password`、`token` 等敏感字段脱敏。
 
+调度模块也已启用：
+
+```bash
+curl http://localhost:3000/scheduler/status
+```
+
+`@raytonx/nest-scheduler` 使用 `memory` driver 注册一个每 30 秒执行一次的 `DistributedInterval` 任务。`GET /scheduler/status` 会返回任务名、执行次数、上次执行时间和间隔。示例使用 `logging: "verbose"`，运行应用后可以在日志中看到任务开始、锁获取、执行完成和锁释放事件。
+
 ## 构建与启动
 
 ```bash

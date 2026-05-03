@@ -61,6 +61,14 @@ curl http://localhost:3000/logger/demo
 
 `@raytonx/nest-logger` replaces the Nest logger with structured Pino logging. `GET /logger/demo` calls a service method decorated with `@Log()`, which emits method-level log events and redacts sensitive fields such as `password` and `token`.
 
+The scheduler module is enabled too:
+
+```bash
+curl http://localhost:3000/scheduler/status
+```
+
+`@raytonx/nest-scheduler` registers a `DistributedInterval` task with the `memory` driver and runs it every 30 seconds. `GET /scheduler/status` returns the task name, run count, last run time, and interval. The example uses `logging: "verbose"`, so the app logs task start, lock acquisition, completion, and lock release events.
+
 ## Build And Start
 
 ```bash

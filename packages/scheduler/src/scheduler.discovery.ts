@@ -1,6 +1,6 @@
 import { Injectable, type OnApplicationShutdown, type OnModuleInit } from "@nestjs/common";
 
-import { type SchedulerExecutionService } from "./scheduler.execution.service";
+import { SchedulerExecutionService } from "./scheduler.execution.service";
 import { type DistributedTaskMetadata } from "./scheduler.interfaces";
 
 const registeredTasks: DistributedTaskMetadata[] = [];

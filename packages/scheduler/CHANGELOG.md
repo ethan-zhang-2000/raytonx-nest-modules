@@ -1,5 +1,11 @@
 # @raytonx/nest-scheduler
 
+## 0.2.1
+
+### Patch Changes
+
+- 0403d75: Fix `SchedulerDiscoveryService` dependency injection metadata in published builds.
+
 ## 0.2.0
 
 ### Minor Changes

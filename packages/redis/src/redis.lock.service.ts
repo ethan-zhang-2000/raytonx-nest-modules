@@ -19,7 +19,7 @@ import type {
   RedisLockModuleOptions,
   RedisRunWithLockOptions,
 } from "./redis.interfaces";
-import { type RedisService } from "./redis.service";
+import { RedisService } from "./redis.service";
 import {
   assertNonNegativeInteger,
   assertPositiveInteger,

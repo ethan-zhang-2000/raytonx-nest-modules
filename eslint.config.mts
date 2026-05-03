@@ -51,7 +51,7 @@ export default defineConfig(
     },
   },
   {
-    files: ["apps/example/src/**/*.ts", "packages/scheduler/src/**/*.ts"],
+    files: ["apps/example/src/**/*.ts", "packages/*/src/**/*.ts"],
     rules: {
       "@typescript-eslint/consistent-type-imports": "off",
     },

@@ -1,5 +1,11 @@
 # @raytonx/nest-redis
 
+## 0.2.1
+
+### Patch Changes
+
+- e3ce95d: Fix RedisLockService dependency injection metadata so Nest can resolve RedisService at runtime.
+
 ## 0.2.0
 
 ### Minor Changes

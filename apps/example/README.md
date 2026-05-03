@@ -44,30 +44,76 @@ pnpm dev
 
 `pnpm dev` 会先使用 `tsc` 编译，再运行 `node --watch dist/main.js`，示例代码与生产构建后的运行方式保持一致。
 
-访问：
+基础健康检查：
 
 ```bash
 curl http://localhost:3000/health
+```
+
+## 示例模块
+
+### `@raytonx/config`
+
+示例内容：
+
+- 在 `AppModule` 中通过 `ConfigModule.forRoot` 注册全局配置模块。
+- 使用 `envFilePath: "auto"` 加载当前目录下的 env 文件。
+- 使用 Zod schema 校验和转换配置值。
+- 在 `ConfigController` 和 `HealthController` 中通过 `ConfigService` 读取配置。
+
+查看方式：
+
+```bash
 curl http://localhost:3000/config
 ```
 
-`GET /config` 会返回经 `@raytonx/config` 校验和转换后的配置值。
+验证重点：
 
-日志模块也已启用：
+- `port` 会被转换为 number。
+- `serviceName` 会来自 `SERVICE_NAME` 或默认值。
+- 返回值展示的是校验和转换后的配置，而不是原始字符串环境变量。
+
+### `@raytonx/nest-logger`
+
+示例内容：
+
+- 在 `AppModule` 中通过 `LoggerModule.forRootAsync` 注册日志模块。
+- 从 `ConfigService` 读取 `NODE_ENV`、`SERVICE_NAME` 和 `LOG_LEVEL`。
+- 在 `main.ts` 中通过 `app.useLogger(app.get(Logger))` 接管 Nest logger。
+- 在 `LoggerDemoService` 中使用 `@Log()` 记录方法级日志。
+
+查看方式：
 
 ```bash
 curl http://localhost:3000/logger/demo
 ```
 
-`@raytonx/nest-logger` 会接管 Nest logger，输出 Pino 结构化请求日志。`GET /logger/demo` 会调用一个带 `@Log()` 的 service 方法，日志中会展示方法级事件，并对 `password`、`token` 等敏感字段脱敏。
+验证重点：
 
-调度模块也已启用：
+- 控制台会输出 Pino 结构化请求日志。
+- `@Log()` 会输出方法执行事件、耗时、参数和返回值。
+- 示例参数中的 `password`、`token` 会被脱敏。
+
+### `@raytonx/nest-scheduler`
+
+示例内容：
+
+- 在 `AppModule` 中注册 `ScheduleModule.forRoot()` 和 `SchedulerModule.forRoot()`。
+- 使用 `memory` driver 演示无 Redis 依赖的进程内锁。
+- 在 `SchedulerDemoService` 中使用 `@DistributedInterval` 注册一个每 30 秒执行一次的任务。
+- 任务记录执行次数和上次执行时间。
+
+查看方式：
 
 ```bash
 curl http://localhost:3000/scheduler/status
 ```
 
-`@raytonx/nest-scheduler` 使用 `memory` driver 注册一个每 30 秒执行一次的 `DistributedInterval` 任务。`GET /scheduler/status` 会返回任务名、执行次数、上次执行时间和间隔。示例使用 `logging: "verbose"`，运行应用后可以在日志中看到任务开始、锁获取、执行完成和锁释放事件。
+验证重点：
+
+- `runCount` 会随定时任务执行递增。
+- `lastRunAt` 会在任务执行后变成 ISO 时间字符串。
+- 控制台会输出任务开始、锁获取、执行完成和锁释放等 verbose 调度日志。
 
 ## 构建与启动
 

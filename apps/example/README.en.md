@@ -44,30 +44,76 @@ pnpm dev
 
 `pnpm dev` compiles with `tsc` first, then runs `node --watch dist/main.js`, so the example code matches the production build runtime.
 
-Visit:
+Basic health check:
 
 ```bash
 curl http://localhost:3000/health
+```
+
+## Module Examples
+
+### `@raytonx/config`
+
+What this example does:
+
+- Registers `ConfigModule.forRoot` globally in `AppModule`.
+- Uses `envFilePath: "auto"` to load env files from the current directory.
+- Validates and transforms config values with a Zod schema.
+- Reads config values through `ConfigService` in `ConfigController` and `HealthController`.
+
+How to inspect it:
+
+```bash
 curl http://localhost:3000/config
 ```
 
-`GET /config` returns the configuration values validated and transformed by `@raytonx/config`.
+What to verify:
 
-The logger module is enabled too:
+- `port` is transformed into a number.
+- `serviceName` comes from `SERVICE_NAME` or its default value.
+- The response shows validated and transformed config values instead of raw string environment variables.
+
+### `@raytonx/nest-logger`
+
+What this example does:
+
+- Registers `LoggerModule.forRootAsync` in `AppModule`.
+- Reads `NODE_ENV`, `SERVICE_NAME`, and `LOG_LEVEL` from `ConfigService`.
+- Replaces the Nest logger in `main.ts` with `app.useLogger(app.get(Logger))`.
+- Uses `@Log()` in `LoggerDemoService` to emit method-level logs.
+
+How to inspect it:
 
 ```bash
 curl http://localhost:3000/logger/demo
 ```
 
-`@raytonx/nest-logger` replaces the Nest logger with structured Pino logging. `GET /logger/demo` calls a service method decorated with `@Log()`, which emits method-level log events and redacts sensitive fields such as `password` and `token`.
+What to verify:
 
-The scheduler module is enabled too:
+- The console prints structured Pino request logs.
+- `@Log()` emits method execution events, duration, arguments, and return values.
+- Example `password` and `token` arguments are redacted.
+
+### `@raytonx/nest-scheduler`
+
+What this example does:
+
+- Registers `ScheduleModule.forRoot()` and `SchedulerModule.forRoot()` in `AppModule`.
+- Uses the `memory` driver to demonstrate process-local locking without Redis.
+- Registers a task in `SchedulerDemoService` with `@DistributedInterval` that runs every 30 seconds.
+- Tracks the run count and last run time.
+
+How to inspect it:
 
 ```bash
 curl http://localhost:3000/scheduler/status
 ```
 
-`@raytonx/nest-scheduler` registers a `DistributedInterval` task with the `memory` driver and runs it every 30 seconds. `GET /scheduler/status` returns the task name, run count, last run time, and interval. The example uses `logging: "verbose"`, so the app logs task start, lock acquisition, completion, and lock release events.
+What to verify:
+
+- `runCount` increases as the scheduled task runs.
+- `lastRunAt` becomes an ISO timestamp after the task runs.
+- The console prints verbose scheduler logs for task start, lock acquisition, completion, and lock release.
 
 ## Build And Start
 

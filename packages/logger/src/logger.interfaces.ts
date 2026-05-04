@@ -24,6 +24,7 @@ export interface LoggerModuleOptions {
   service?: string;
   env?: string;
   level?: LoggerLevel | string;
+  pretty?: boolean;
   requestIdHeader?: string;
   traceIdHeader?: string;
   generateId?: () => string;
@@ -56,6 +57,7 @@ export interface NormalizedLoggerModuleOptions {
   global: boolean;
   isGlobal: boolean;
   level: string;
+  pretty: boolean;
   logDecorator: NormalizedLoggerDecoratorOptions;
   pinoHttp: Record<string, unknown>;
   redaction: NormalizedLoggerRedactionOptions;

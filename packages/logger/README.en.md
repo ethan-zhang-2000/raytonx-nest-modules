@@ -10,6 +10,12 @@ Chinese version: [README.md](README.md)
 pnpm add @raytonx/nest-logger nestjs-pino pino pino-http
 ```
 
+If you want pretty console logs, install this optional dependency as well:
+
+```bash
+pnpm add pino-pretty
+```
+
 ## Features
 
 - Replace Nest's default logger with Pino
@@ -76,6 +82,31 @@ Default logs include:
 - `level`
 - `requestId`
 - `traceId`
+
+## Pretty Output
+
+The module can enable more human-readable console logs through `LOG_PRETTY`. It is disabled by default. The recommended approach is to avoid enabling pretty output in application code and instead inject the environment variable from package scripts based on how the app is being run: `pnpm dev` is usually local development and can enable pretty output, while other runs should keep JSON structured logs.
+
+Recommended script setup:
+
+```json
+{
+  "scripts": {
+    "dev": "LOG_PRETTY=1 node dist/main.js",
+    "start": "node dist/main.js"
+  }
+}
+```
+
+You can also control it directly from the command line:
+
+```bash
+LOG_PRETTY=1 pnpm dev
+```
+
+When the `pretty` option is not set explicitly, the module reads `LOG_PRETTY`. Only `true` and `1` enable pretty output; all other values keep it disabled.
+
+When enabled, the module configures a default `pino-pretty` transport automatically. If you also provide `pinoHttp.transport`, the explicit transport takes precedence.
 
 `@Log()` logs also include:
 

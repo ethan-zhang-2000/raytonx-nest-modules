@@ -10,6 +10,12 @@ English version: [README.en.md](README.en.md)
 pnpm add @raytonx/nest-logger nestjs-pino pino pino-http
 ```
 
+如果需要 pretty 控制台日志，再额外安装：
+
+```bash
+pnpm add pino-pretty
+```
+
 ## 功能边界
 
 - 使用 Pino 替换 Nest 默认 Logger
@@ -76,6 +82,31 @@ LoggerModule.forRoot({
 - `level`
 - `requestId`
 - `traceId`
+
+## Pretty 输出
+
+模块支持通过 `LOG_PRETTY` 启用更适合本地阅读的控制台日志输出，默认关闭。推荐做法是不在业务代码里显式配置 pretty，而是在包脚本中按运行方式临时注入环境变量：`pnpm dev` 通常用于本地开发，适合开启 pretty；其他场景默认保持 JSON 序列化后的结构化日志输出。
+
+推荐脚本写法：
+
+```json
+{
+  "scripts": {
+    "dev": "LOG_PRETTY=1 node dist/main.js",
+    "start": "node dist/main.js"
+  }
+}
+```
+
+也可以直接通过命令行环境变量控制：
+
+```bash
+LOG_PRETTY=1 pnpm dev
+```
+
+模块在未显式传入 `pretty` 选项时，会读取 `LOG_PRETTY`。只有 `true` 和 `1` 会启用 pretty 输出，其余值都视为关闭。
+
+启用后，模块会自动为 `pino` 配置默认的 `pino-pretty` transport；如果同时传入了 `pinoHttp.transport`，则以显式传入的 transport 为准。
 
 `@Log()` 装饰器日志额外包含：
 

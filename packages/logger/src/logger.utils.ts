@@ -29,6 +29,7 @@ export function normalizeLoggerModuleOptions(
     global: options.global ?? false,
     isGlobal: options.isGlobal ?? options.global ?? false,
     level: options.level ?? process.env.LOG_LEVEL ?? "info",
+    pretty: options.pretty ?? parseBooleanEnv(process.env.LOG_PRETTY),
     logDecorator: {
       enabled: options.logDecorator?.enabled ?? true,
       includeArgs: options.logDecorator?.includeArgs ?? true,
@@ -66,6 +67,7 @@ export function createPinoHttpOptions(
   return {
     ...userOptions,
     level: options.level,
+    transport: userOptions.transport ?? (options.pretty ? createPrettyTransport() : undefined),
     base: {
       ...getRecord(userOptions.base),
       env: options.env,
@@ -107,6 +109,28 @@ export function createPinoHttpOptions(
         }
       : undefined,
   };
+}
+
+function createPrettyTransport(): Record<string, unknown> {
+  return {
+    target: "pino-pretty",
+    options: {
+      colorize: true,
+      ignore: "pid,hostname",
+      singleLine: false,
+      translateTime: "SYS:standard",
+    },
+  };
+}
+
+function parseBooleanEnv(value: string | undefined): boolean {
+  if (!value) {
+    return false;
+  }
+
+  const normalized = value.trim().toLowerCase();
+
+  return normalized === "1" || normalized === "true";
 }
 
 export function sanitizeLogValue(

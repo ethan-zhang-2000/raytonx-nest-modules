@@ -35,11 +35,55 @@ describe("logger utils", () => {
       expect.objectContaining({
         env: expect.any(String),
         level: "info",
+        pretty: false,
         requestIdHeader: "x-request-id",
         service: "billing-api",
         traceIdHeader: "x-trace-id",
       }),
     );
+  });
+
+  it("enables pretty logging from LOG_PRETTY when the module option is not set", () => {
+    vi.stubEnv("LOG_PRETTY", "true");
+
+    const options = normalizeLoggerModuleOptions();
+
+    expect(options.pretty).toBe(true);
+
+    vi.unstubAllEnvs();
+  });
+
+  it("adds a pretty transport when pretty logging is enabled", () => {
+    const options = normalizeLoggerModuleOptions({
+      pretty: true,
+    });
+    const pinoHttp = createPinoHttpOptions(options);
+
+    expect(pinoHttp.transport).toEqual({
+      target: "pino-pretty",
+      options: {
+        colorize: true,
+        ignore: "pid,hostname",
+        singleLine: false,
+        translateTime: "SYS:standard",
+      },
+    });
+  });
+
+  it("keeps a user-provided transport when pretty logging is enabled", () => {
+    const options = normalizeLoggerModuleOptions({
+      pretty: true,
+      pinoHttp: {
+        transport: {
+          target: "custom-target",
+        },
+      },
+    });
+    const pinoHttp = createPinoHttpOptions(options);
+
+    expect(pinoHttp.transport).toEqual({
+      target: "custom-target",
+    });
   });
 
   it("redacts sensitive fields and masks phone/id-card values", () => {

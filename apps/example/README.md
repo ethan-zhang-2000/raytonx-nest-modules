@@ -105,6 +105,29 @@ curl http://localhost:3000/logger/demo
 - `@Log()` 会输出方法执行事件、耗时、参数和返回值。
 - 示例参数中的 `password`、`token` 会被脱敏。
 
+### `@raytonx/nest-response`
+
+示例内容：
+
+- 在 `AppModule` 中通过 `ResponseModule.forRoot({ isGlobal: true })` 注册全局响应转换拦截器与异常过滤器。
+- 普通 controller 返回值会自动包装为统一响应结构。
+- 已经通过 `ResponseBuilder.success()` 构建的 envelope 不会被重复包装。
+- 抛出的 `BadRequestException` 会被统一转换为错误响应结构。
+
+查看方式：
+
+```bash
+curl http://localhost:3000/response/success
+curl http://localhost:3000/response/manual
+curl http://localhost:3000/response/error
+```
+
+验证重点：
+
+- `/response/success` 返回的数据会自动包装为 `{ success, code, message, data }` 结构。
+- `/response/manual` 会保留 `ResponseBuilder.success()` 生成的自定义 `code` 和 `message`。
+- `/response/error` 会返回 `400`，并被包装为统一错误响应，而不是默认 Nest 异常体。
+
 ### `@raytonx/nest-scheduler`
 
 示例内容：

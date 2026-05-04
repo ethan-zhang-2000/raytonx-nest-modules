@@ -20,6 +20,7 @@
     "@raytonx/config": "^0.2.0",
     "@raytonx/nest-logger": "^0.1.0",
     "@raytonx/nest-redis": "^0.2.1",
+    "@raytonx/nest-response": "^0.3.0",
     "@raytonx/nest-scheduler": "^0.2.2",
     "ioredis": "^5.10.1",
     "nestjs-pino": "^4.6.1",

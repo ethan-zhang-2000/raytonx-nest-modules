@@ -105,6 +105,29 @@ What to verify:
 - `@Log()` emits method execution events, duration, arguments, and return values.
 - Example `password` and `token` arguments are redacted.
 
+### `@raytonx/nest-response`
+
+What this example does:
+
+- Registers `ResponseModule.forRoot({ isGlobal: true })` in `AppModule` to enable the global transform interceptor and exception filter.
+- Automatically wraps plain controller return values in the standard response envelope.
+- Leaves envelopes created with `ResponseBuilder.success()` unchanged instead of wrapping them again.
+- Converts thrown `BadRequestException` values into the standard error envelope.
+
+How to inspect it:
+
+```bash
+curl http://localhost:3000/response/success
+curl http://localhost:3000/response/manual
+curl http://localhost:3000/response/error
+```
+
+What to verify:
+
+- `/response/success` returns data wrapped in the `{ success, code, message, data }` structure.
+- `/response/manual` keeps the custom `code` and `message` produced by `ResponseBuilder.success()`.
+- `/response/error` returns `400` and uses the standard error envelope instead of the default Nest exception body.
+
 ### `@raytonx/nest-scheduler`
 
 What this example does:

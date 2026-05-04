@@ -29,6 +29,9 @@ importers:
       '@raytonx/nest-redis':
         specifier: ^0.2.1
         version: 0.2.1(@nestjs/common@11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2))
+      '@raytonx/nest-response':
+        specifier: ^0.3.0
+        version: 0.3.0(@nestjs/common@11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.19)(rxjs@7.8.2)
       '@raytonx/nest-scheduler':
         specifier: ^0.2.2
         version: 0.2.2(@nestjs/common@11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/schedule@5.0.1(@nestjs/common@11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.19))(@raytonx/nest-redis@0.2.1(@nestjs/common@11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2)))
@@ -297,6 +300,13 @@ packages:
     resolution: {integrity: sha512-3Z5pdKh5KhbyX1m8M1AIVTSEmHFb157hrHAS1v6gDKRgNxYgWJItPWKxgWtrnb9mGODK48LKGs+gNmfrBkqjUQ==}
     peerDependencies:
       '@nestjs/common': ^10.0.0 || ^11.0.0
+
+  '@raytonx/nest-response@0.3.0':
+    resolution: {integrity: sha512-Vkh0skONpjz+CQfiKYk8ttVtQwnl6BOSk+uKToceBpWVlQqhRsm39BkBl6jKfILwVbgdlCbsR1LEhYzRUiov1g==}
+    peerDependencies:
+      '@nestjs/common': ^10.0.0 || ^11.0.0
+      '@nestjs/core': ^10.0.0 || ^11.0.0
+      rxjs: ^7.8.0
 
   '@raytonx/nest-scheduler@0.2.2':
     resolution: {integrity: sha512-UqnTpx89YgP+zRTQF4C0HtaJ7/3DhPJlCDp45eYF9ilxfvRgU8GtHa9UytlcrK8yE8cYCvs6AuIDC8P5EDZXMA==}
@@ -1467,6 +1477,13 @@ snapshots:
       ioredis: 5.10.1
     transitivePeerDependencies:
       - supports-color
+
+  '@raytonx/nest-response@0.3.0(@nestjs/common@11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.19)(rxjs@7.8.2)':
+    dependencies:
+      '@nestjs/common': 11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/core': 11.1.19(@nestjs/common@11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.19)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@raytonx/core': 0.1.0(@nestjs/common@11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2))
+      rxjs: 7.8.2
 
   '@raytonx/nest-scheduler@0.2.2(@nestjs/common@11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/schedule@5.0.1(@nestjs/common@11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.19))(@raytonx/nest-redis@0.2.1(@nestjs/common@11.1.19(reflect-metadata@0.2.2)(rxjs@7.8.2)))':
     dependencies:

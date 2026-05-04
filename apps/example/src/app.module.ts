@@ -3,6 +3,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { ConfigModule, ConfigService } from "@raytonx/config";
 import { LoggerModule } from "@raytonx/nest-logger";
 import { RedisModule } from "@raytonx/nest-redis";
+import { ResponseModule } from "@raytonx/nest-response";
 import { SchedulerModule } from "@raytonx/nest-scheduler";
 
 import { ConfigController } from "./config.controller";
@@ -11,6 +12,7 @@ import { HealthController } from "./health.controller";
 import { LoggerDemoService } from "./logger-demo.service";
 import { LoggerController } from "./logger.controller";
 import { RedisStartupProbe } from "./redis-startup.probe";
+import { ResponseController } from "./response.controller";
 import { SchedulerDemoService } from "./scheduler-demo.service";
 import { SchedulerController } from "./scheduler.controller";
 
@@ -34,6 +36,9 @@ import { SchedulerController } from "./scheduler.controller";
           service: config.getOrThrow("SERVICE_NAME"),
         };
       },
+    }),
+    ResponseModule.forRoot({
+      isGlobal: true,
     }),
     RedisModule.forRootAsync({
       connectionNames: ["default"],
@@ -70,7 +75,13 @@ import { SchedulerController } from "./scheduler.controller";
       },
     }),
   ],
-  controllers: [ConfigController, HealthController, LoggerController, SchedulerController],
+  controllers: [
+    ConfigController,
+    HealthController,
+    LoggerController,
+    ResponseController,
+    SchedulerController,
+  ],
   providers: [LoggerDemoService, RedisStartupProbe, SchedulerDemoService],
 })
 export class AppModule {}

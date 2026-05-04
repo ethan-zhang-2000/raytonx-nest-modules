@@ -10,6 +10,7 @@ Chinese version: [README.md](README.md)
 
 - Node.js 20+
 - pnpm 10+
+- Redis 7+, used by the Redis and scheduler distributed lock examples
 
 ## Install
 
@@ -38,11 +39,21 @@ Configuration is loaded by `@raytonx/config` and validated/transformed with a Zo
 
 ## Run
 
+Start Redis:
+
+```bash
+docker run --rm -p 6379:6379 redis:7-alpine
+```
+
+Start the example app:
+
 ```bash
 pnpm dev
 ```
 
 `pnpm dev` compiles with `tsc` first, then runs `node --watch dist/main.js`, so the example code matches the production build runtime.
+
+If Redis is not running or `REDIS_URL` cannot be reached, the app fails during startup with a clear message that Redis must be started first. This check is handled by `RedisStartupProbe`, so the scheduler Redis lock example does not silently run with Redis unavailable.
 
 Basic health check:
 
@@ -99,9 +110,12 @@ What to verify:
 What this example does:
 
 - Registers `ScheduleModule.forRoot()` and `SchedulerModule.forRoot()` in `AppModule`.
-- Uses the `memory` driver to demonstrate process-local locking without Redis.
-- Registers a task in `SchedulerDemoService` with `@DistributedInterval` that runs every 30 seconds.
-- Tracks the run count and last run time.
+- Uses the `redis` driver to demonstrate cross-process distributed locking.
+- Connects to `REDIS_URL` through `@raytonx/nest-redis` and reuses Redis lock configuration.
+- Registers three tasks in `SchedulerDemoService`:
+  - `redis-heartbeat`: runs every 10 seconds and holds the Redis lock for about 4 seconds so lock contention is easy to observe across processes.
+  - `redis-failure`: runs every 20 seconds, holds the Redis lock for about 6 seconds, and then throws intentionally so contention and failure logs are easy to observe across processes.
+  - `redis-ttl-expiry`: runs every 20 seconds, uses a 2-second lock TTL, runs for 8 seconds, and disables auto extension so contention happens first and lock expiry or release failure logs can still be inspected.
 
 How to inspect it:
 
@@ -111,9 +125,21 @@ curl http://localhost:3000/scheduler/status
 
 What to verify:
 
-- `runCount` increases as the scheduled task runs.
-- `lastRunAt` becomes an ISO timestamp after the task runs.
-- The console prints verbose scheduler logs for task start, lock acquisition, completion, and lock release.
+- `instanceId` is the current Node.js process pid, which helps distinguish multiple processes.
+- `redisLockKeys` lists the Redis lock keys used by this example.
+- `redis-heartbeat` increases `runCount` only when the current process successfully acquires the lock.
+- `redis-failure` and `redis-ttl-expiry` also increase `runCount` only when the current process acquires the lock; the other process should log `task_skipped` for the same tick.
+- `redis-failure` records the intentional error in `lastError`.
+- `redis-ttl-expiry` runs longer than its lock TTL, so the console can show lock expiration or release failure logs.
+
+Multi-process verification:
+
+```bash
+PORT=3000 pnpm start
+PORT=3001 pnpm start
+```
+
+When both processes use the same `REDIS_URL`, each task tick should be executed by only one process. Inspect `/scheduler/status` on both ports to compare task run counts across different `instanceId` values: for a given tick, only one process should increase the matching `runCount`, while the other stays flat. In each process console, you should also see the expected `task_succeeded`, `task_failed`, `task_skipped`, and `lock_expired_before_finish` log entries.
 
 ## Build And Start
 

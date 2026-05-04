@@ -10,6 +10,7 @@ English version: [README.en.md](README.en.md)
 
 - Node.js 20+
 - pnpm 10+
+- Redis 7+，用于 Redis 与 scheduler 分布式锁示例
 
 ## 安装
 
@@ -38,11 +39,21 @@ cp .env.example .env
 
 ## 运行
 
+启动 Redis：
+
+```bash
+docker run --rm -p 6379:6379 redis:7-alpine
+```
+
+启动示例应用：
+
 ```bash
 pnpm dev
 ```
 
 `pnpm dev` 会先使用 `tsc` 编译，再运行 `node --watch dist/main.js`，示例代码与生产构建后的运行方式保持一致。
+
+如果 Redis 未启动或 `REDIS_URL` 不可连接，应用会在启动阶段报错，并提示先启动 Redis。这个检查由 `RedisStartupProbe` 完成，用于避免 scheduler Redis 锁示例在 Redis 不可用时静默降级。
 
 基础健康检查：
 
@@ -99,9 +110,12 @@ curl http://localhost:3000/logger/demo
 示例内容：
 
 - 在 `AppModule` 中注册 `ScheduleModule.forRoot()` 和 `SchedulerModule.forRoot()`。
-- 使用 `memory` driver 演示无 Redis 依赖的进程内锁。
-- 在 `SchedulerDemoService` 中使用 `@DistributedInterval` 注册一个每 30 秒执行一次的任务。
-- 任务记录执行次数和上次执行时间。
+- 使用 `redis` driver 演示跨进程分布式锁。
+- 通过 `@raytonx/nest-redis` 连接 `REDIS_URL`，并复用 Redis lock 配置。
+- 在 `SchedulerDemoService` 中注册三个任务：
+  - `redis-heartbeat`：每 10 秒执行一次，每次持有 Redis 锁约 4 秒，方便在多个进程之间稳定观察锁争用。
+  - `redis-failure`：每 20 秒执行一次，先持有 Redis 锁约 6 秒，再故意抛错，方便在多个进程之间观察争锁和失败日志。
+  - `redis-ttl-expiry`：每 20 秒执行一次，锁 TTL 为 2 秒，任务执行 8 秒，并关闭自动续期，方便在多个进程之间先观察争锁，再观察锁超时或释放失败日志。
 
 查看方式：
 
@@ -111,9 +125,21 @@ curl http://localhost:3000/scheduler/status
 
 验证重点：
 
-- `runCount` 会随定时任务执行递增。
-- `lastRunAt` 会在任务执行后变成 ISO 时间字符串。
-- 控制台会输出任务开始、锁获取、执行完成和锁释放等 verbose 调度日志。
+- `instanceId` 是当前 Node.js 进程 pid，可用于区分多个进程。
+- `redisLockKeys` 展示本示例使用的 Redis 锁 key。
+- `redis-heartbeat` 的 `runCount` 只会在当前进程成功拿到锁时递增。
+- `redis-failure` 和 `redis-ttl-expiry` 也只会在当前进程成功拿到锁时递增；另一个进程在同一轮会记录 `task_skipped`。
+- `redis-failure` 的 `lastError` 会记录故意抛出的错误。
+- `redis-ttl-expiry` 会运行超过锁 TTL，控制台可观察锁过期或释放失败相关日志。
+
+多进程验证：
+
+```bash
+PORT=3000 pnpm start
+PORT=3001 pnpm start
+```
+
+两个进程使用同一个 `REDIS_URL` 时，三个任务都应只由其中一个进程执行。分别访问两个端口的 `/scheduler/status`，可以看到某一轮里只有一个进程的对应任务 `runCount` 递增，而另一个进程在同一轮不会递增；同时两个进程各自的控制台日志中会看到对应的 `task_succeeded`、`task_failed`、`task_skipped` 和 `lock_expired_before_finish` 记录。
 
 ## 构建与启动
 

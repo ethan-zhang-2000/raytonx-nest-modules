@@ -3,10 +3,16 @@ import { Controller, Get } from "@nestjs/common";
 import { SchedulerDemoService } from "./scheduler-demo.service";
 
 interface SchedulerStatusResponse {
-  intervalMs: number;
-  lastRunAt: string | null;
-  runCount: number;
-  taskName: string;
+  instanceId: string;
+  redisLockKeys: string[];
+  tasks: Array<{
+    description: string;
+    intervalMs: number;
+    lastError: string | null;
+    lastRunAt: string | null;
+    runCount: number;
+    taskName: string;
+  }>;
 }
 
 @Controller("scheduler")

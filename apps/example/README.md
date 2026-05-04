@@ -34,6 +34,7 @@ cp .env.example .env
 - `REDIS_URL`：Redis 连接地址，默认 `redis://127.0.0.1:6379`
 - `SERVICE_NAME`：健康检查返回的服务名，默认 `raytonx-example`
 - `LOG_LEVEL`：日志级别，默认 `info`
+- `LOG_PRETTY`：是否启用 `@raytonx/nest-logger` 的 pretty 控制台输出，默认 `false`
 
 `envFilePath: "auto"` 会按当前工作目录加载 `.env`、`.env.local`、`.env.${NODE_ENV}`、`.env.${NODE_ENV}.local`。
 
@@ -52,6 +53,8 @@ pnpm dev
 ```
 
 `pnpm dev` 会先使用 `tsc` 编译，再运行 `node --watch dist/main.js`，示例代码与生产构建后的运行方式保持一致。
+
+`pnpm dev` 会临时注入 `LOG_PRETTY=1`，让 `@raytonx/nest-logger` 自动启用更易读的 pretty 控制台日志；`pnpm start` 默认保持 JSON 结构化日志。该行为由 `LOG_PRETTY` 控制，不依赖 `NODE_ENV`。
 
 如果 Redis 未启动或 `REDIS_URL` 不可连接，应用会在启动阶段报错，并提示先启动 Redis。这个检查由 `RedisStartupProbe` 完成，用于避免 scheduler Redis 锁示例在 Redis 不可用时静默降级。
 
@@ -90,6 +93,7 @@ curl http://localhost:3000/config
 
 - 在 `AppModule` 中通过 `LoggerModule.forRootAsync` 注册日志模块。
 - 从 `ConfigService` 读取 `NODE_ENV`、`SERVICE_NAME` 和 `LOG_LEVEL`。
+- 通过环境变量 `LOG_PRETTY` 控制是否启用 pretty 控制台日志，不需要手动拼接 `pinoHttp.transport`。
 - 在 `main.ts` 中通过 `app.useLogger(app.get(Logger))` 接管 Nest logger。
 - 在 `LoggerDemoService` 中使用 `@Log()` 记录方法级日志。
 
@@ -102,6 +106,7 @@ curl http://localhost:3000/logger/demo
 验证重点：
 
 - 控制台会输出 Pino 结构化请求日志。
+- `pnpm dev` 下会显示更易读的 pretty 日志；未开启 `LOG_PRETTY` 时保持 JSON 结构化输出。
 - `@Log()` 会输出方法执行事件、耗时、参数和返回值。
 - 示例参数中的 `password`、`token` 会被脱敏。
 

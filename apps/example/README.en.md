@@ -34,6 +34,7 @@ Configuration is loaded by `@raytonx/config` and validated/transformed with a Zo
 - `REDIS_URL`: Redis connection URL. Defaults to `redis://127.0.0.1:6379`.
 - `SERVICE_NAME`: Service name returned by the health endpoint. Defaults to `raytonx-example`.
 - `LOG_LEVEL`: Log level. Defaults to `info`.
+- `LOG_PRETTY`: Whether to enable the `@raytonx/nest-logger` pretty console output. Defaults to `false`.
 
 `envFilePath: "auto"` loads `.env`, `.env.local`, `.env.${NODE_ENV}`, and `.env.${NODE_ENV}.local` from the current working directory.
 
@@ -52,6 +53,8 @@ pnpm dev
 ```
 
 `pnpm dev` compiles with `tsc` first, then runs `node --watch dist/main.js`, so the example code matches the production build runtime.
+
+`pnpm dev` temporarily injects `LOG_PRETTY=1`, so `@raytonx/nest-logger` automatically enables more readable pretty console logs. `pnpm start` keeps the default JSON structured logs. This behavior is controlled by `LOG_PRETTY`, not by `NODE_ENV`.
 
 If Redis is not running or `REDIS_URL` cannot be reached, the app fails during startup with a clear message that Redis must be started first. This check is handled by `RedisStartupProbe`, so the scheduler Redis lock example does not silently run with Redis unavailable.
 
@@ -90,6 +93,7 @@ What this example does:
 
 - Registers `LoggerModule.forRootAsync` in `AppModule`.
 - Reads `NODE_ENV`, `SERVICE_NAME`, and `LOG_LEVEL` from `ConfigService`.
+- Uses the `LOG_PRETTY` environment variable to control pretty console logs without manually configuring `pinoHttp.transport`.
 - Replaces the Nest logger in `main.ts` with `app.useLogger(app.get(Logger))`.
 - Uses `@Log()` in `LoggerDemoService` to emit method-level logs.
 
@@ -102,6 +106,7 @@ curl http://localhost:3000/logger/demo
 What to verify:
 
 - The console prints structured Pino request logs.
+- `pnpm dev` shows a more readable pretty log format, while runs without `LOG_PRETTY` keep JSON structured output.
 - `@Log()` emits method execution events, duration, arguments, and return values.
 - Example `password` and `token` arguments are redacted.
 
